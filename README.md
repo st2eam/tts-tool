@@ -1,26 +1,133 @@
-# TTS小工具
+# TTS 小工具
 
-Windows 上用于导入 Tabletop Simulator 图包的轻量单文件工具。
+一个面向 Windows 的桌面工具，用于安全导入、管理和导出
+[Tabletop Simulator](https://store.steampowered.com/app/286160/Tabletop_Simulator/)
+图包。
 
-将已下载的 `.zip` 或 `.rar` 图包拖到窗口即可。程序会找到或要求选择 TTS 的 `Mods` 目录，并只解压 `Images`、`Models`、`Workshop` 等标准资源目录。覆盖原有文件前会建立可撤销备份。
+它使用 Rust 和 egui 构建，支持 ZIP / RAR 图包导入、TTS Mods 目录识别、
+已安装图包浏览、封面预览，以及基于资源引用闭包的完整导出。
 
-图包详情支持导出资源闭包：程序会解析 TTS JSON 中的本地资源引用，区分远程 URL、未解析引用和同名冲突，导出的 ZIP 还会包含 `tts-tool-manifest.json`，记录每个文件的相对路径、引用来源、大小和 SHA-256。相比简单的全目录同名扫描，这能避免把无关同名文件静默打进包内。
-图包列表支持右键菜单，可直接打开详情、导出图包、定位 JSON 文件，并删除最近生成的导出 ZIP；删除操作不会修改 Mods 目录中的原始资源。
-主界面分为两个独立区域：`TTS 图包管理` 用于浏览已安装图包和执行管理操作，`TTS 图包导入` 用于拖放或选择 ZIP / RAR 文件。导入进度和结果只显示在导入区域，不会替换图包列表。
+## 功能
 
-目录选择会校验所选位置是否为 TTS Mods 目录（目录名为 `Mods`，或包含 `Workshop`、`Images`、`Models` 等标准目录），并显示已识别的标准目录、图包数量和资源文件数量。导入成功后会自动重新扫描图包列表。
+- **安全导入**
+  - 支持 `.zip` 和 `.rar`。
+  - 自动发现常见的 TTS `Mods` 目录，也支持手动选择。
+  - 仅接受可识别的 TTS 目录，避免误选普通文件夹。
+  - 覆盖文件前创建可回滚备份；导入失败时尽量恢复原状。
+  - 导入完成后自动刷新图包列表和目录统计。
+- **图包管理**
+  - 扫描 `Workshop` 目录中的 JSON 图包。
+  - 读取 `SaveName` 作为显示名称。
+  - 自动查找同名 JPG / JPEG / PNG 封面并缓存缩略图。
+  - 点击图包查看详情；右键提供详情、导出、资源管理器定位等操作。
+- **资源闭包导出**
+  - 解析图包 JSON 中的本地资源引用和远程 URL。
+  - 区分已找到、未解析、远程资源和同名冲突。
+  - 将 JSON、封面及相关本地资源写入 ZIP。
+  - 在导出包中生成 `tts-tool-manifest.json`，记录相对路径、引用来源、
+    文件大小和 SHA-256。
+  - 可删除已生成的导出 ZIP；不会删除 Mods 目录中的原始图包或共享资源。
+
+## 使用
+
+### 1. 选择 Mods 目录
+
+启动后，程序会尝试发现 TTS Mods 目录。目录必须满足以下条件之一：
+
+- 目录名为 `Mods`；
+- 包含一个或多个标准 TTS 子目录，例如 `Workshop`、`Images`、`Models`、
+  `Audio`、`PDF` 或 `Video`。
+
+确认目录后，界面会显示已识别目录数量、图包数量和资源文件数量。
+
+### 2. 导入图包
+
+将 ZIP / RAR 文件拖入 **TTS 图包导入** 区域，或点击区域选择文件。
+导入过程会显示当前阶段和进度。导入完成后，图包会出现在
+**TTS 图包管理** 区域。
+
+### 3. 查看和导出
+
+在管理区域中：
+
+- 单击图包打开详情；
+- 右键图包打开操作菜单；
+- 选择“导出图包”生成资源闭包 ZIP；
+- 选择“在资源管理器中定位”打开原始 JSON；
+- 对已经导出的图包选择“删除导出文件”。
+
+导出 ZIP 内的 `tts-tool-manifest.json` 可用于检查导出内容和资源完整性。
+
+## 目录结构
+
+```text
+tts-tool/
+├─ src/
+│  ├─ main.rs              # egui 界面、扫描、导入交互和导出交互
+│  └─ lib.rs               # 目录识别、归档导入、资源索引和回滚逻辑
+├─ localization/           # TTS 本地化相关工具和资源
+├─ research/               # 项目分析和参考实现研究文档
+├─ app.manifest            # Windows 应用清单
+├─ build.rs                # Windows 资源编译
+├─ package.ps1             # Release 构建和 EXE 打包脚本
+├─ tts-tool.rc             # Windows 图标资源
+├─ icon.ico                # EXE / 资源管理器图标
+└─ logo.png                # 运行时窗口图标
+```
+
+## 技术栈
+
+- Rust 2024 Edition
+- [eframe / egui](https://github.com/emilk/egui)
+- `zip`：ZIP 归档读取和写入
+- `unrar-rs`：RAR 归档读取
+- `serde` / `serde_json`：TTS JSON 解析
+- `sha2`：导出 manifest 的 SHA-256 校验
+- `rfd`：Windows 文件和目录选择器
+- `image`：封面读取和缩略图生成
+
+## 开发环境
+
+| 项目 | 要求 |
+| --- | --- |
+| 操作系统 | Windows |
+| Rust | stable toolchain，支持 Rust 2024 Edition |
+| Windows SDK | 构建发布版 EXE 时需要 `mt.exe` |
+| Visual C++ 工具链 | 由 Rust MSVC toolchain 提供 |
 
 ## 构建
 
+运行测试：
+
 ```powershell
-cargo test
+cargo test --quiet
+```
+
+构建发布版并生成单文件 EXE：
+
+```powershell
 .\package.ps1
 ```
 
-**成品位于 `dist\TTS小工具.exe`**，仅此一个文件，可直接分发。
+输出文件：
 
-构建说明：
-- `build.rs` 在编译期通过 embed-resource 编译 `tts-tool.rc`；`package.ps1` 再用 mt.exe 把 `app.manifest`（Common-Controls 6.0、`asInvoker`、PerMonitorV2 高 DPI 感知）注入 PE。
-- `.cargo\config.toml` 开启 `crt-static`，成品不依赖 `vcruntime140.dll` / `ucrtbase.dll`，可单文件分发。
-- `Cargo.toml` 的 `[profile.release]` 已启用 LTO、`opt-level="z"`、`panic="abort"`、符号剥离。
-- `dist\` 每次构建会被清空，只保留最新版本；`target\` 为 Cargo 构建缓存，不入库。
+```text
+dist\TTS小工具.exe
+```
+
+`package.ps1` 会执行以下步骤：
+
+1. 使用 Cargo 构建 Release 版本；
+2. 使用 Windows SDK 的 `mt.exe` 注入 `app.manifest`；
+3. 清空 `dist\`；
+4. 复制最新 EXE 到 `dist\`。
+
+Release 配置已启用 LTO、体积优化、符号剥离和静态 CRT，目标是生成便于分发的
+单文件 Windows 应用。`target\` 和 `dist\` 不纳入版本库。
+
+## 许可和第三方声明
+
+项目当前未声明统一的开源许可证。发布或再分发前，请先补充项目许可证。
+
+RAR 支持依赖 `unrar-rs`，其相关 UnRAR 许可要求见
+[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
