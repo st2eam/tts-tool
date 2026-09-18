@@ -1,0 +1,7 @@
+# Static-link the MSVC C runtime so the released EXE does not depend on
+# vcruntime140.dll / msvcp140.dll / ucrtbase.dll.
+[target.x86_64-pc-windows-msvc]
+rustflags = ["-C", "target-feature=+crt-static"]
+
+[target.i686-pc-windows-msvc]
+rustflags = ["-C", "target-feature=+crt-static"]

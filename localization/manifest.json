@@ -1,0 +1,70 @@
+{
+  "project": "THE GANG 简体中文本地化",
+  "source_save": "D:/Documents/My Games/Tabletop Simulator/Mods/Workshop/3689375010.json",
+  "target_mode": "local-only-independent-save",
+  "status": "first-review",
+  "scope": {
+    "include": [
+      "challenge cards",
+      "tool cards",
+      "specialist cards",
+      "gameplay reference and option panels",
+      "visible object labels and UI text",
+      "Deluxe Edition rulebook"
+    ],
+    "exclude": [
+      "music album artwork",
+      "audio URLs",
+      "purely decorative textures",
+      "code identifiers, GUIDs, CardIDs and Lua function names"
+    ]
+  },
+  "assets": [
+    {
+      "id": "challenge-noise-sensors",
+      "category": "challenge-card",
+      "object_guid": "8ba7ab",
+      "object_name": "Noise Sensor",
+      "source_url": "https://steamusercontent-a.akamaihd.net/ugc/18288828172037109180/AC7CD3AB3FF454C779A80B2AC396418BC8F420EA/",
+      "source_dimensions": [998, 1000],
+      "output": "previews/challenge_noise_sensors_zh.png",
+      "status": "preview-ready"
+    },
+    {
+      "id": "tools-lubricant",
+      "category": "tool-card-atlas",
+      "object_guid": "a92445",
+      "object_name": "Lubricant",
+      "source_url": "https://steamusercontent-a.akamaihd.net/ugc/14830844441531698313/3A1EA5DABD6C920A96ABA3218ED968E2B3932BCB/",
+      "atlas": {"columns": 5, "rows": 3, "cell": [925, 1281]},
+      "output": "previews/tool_lubricant_zh.png",
+      "status": "preview-ready"
+    },
+    {
+      "id": "specialists-coordinator",
+      "category": "specialist-card-atlas",
+      "object_guid": "93369a",
+      "object_name": "Coordinator",
+      "source_url": "https://steamusercontent-a.akamaihd.net/ugc/45697954631445513/0CA7B287BEDA6CF82B8DC0C083762EC6F2486DCE/",
+      "atlas": {"columns": 5, "rows": 2, "cell": [1350, 1853]},
+      "output": "previews/specialist_coordinator_zh.png",
+      "status": "preview-ready"
+    },
+    {
+      "id": "options-panel",
+      "category": "gameplay-panel",
+      "object_guid": "2ea3aa",
+      "object_name": "Options Panel",
+      "source_url": "https://steamusercontent-a.akamaihd.net/ugc/10871073963052627584/2EE0627E7E4AA2160C49198036536AE7233F46DC/",
+      "source_dimensions": [1000, 1000],
+      "output": "previews/options_panel_zh.png",
+      "status": "preview-ready"
+    }
+  ],
+  "full_batch": {
+    "challenge_images": 28,
+    "tool_atlas_cards": 11,
+    "specialist_atlas_cards": 10,
+    "rulebook": "pending-source-download-and-approved-glossary"
+  }
+}

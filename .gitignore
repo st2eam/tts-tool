@@ -1,0 +1,9 @@
+/target/
+/dist/
+.env
+.env.*
+*.pem
+*.key
+*.p12
+*.pfx
+research/TTS-Mod-Vault/
